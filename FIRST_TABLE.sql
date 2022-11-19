@@ -1,0 +1,113 @@
+CREATE TYPE GRADE_TYPE AS ENUM ('JUNIOR','MIDDLE','SENIOR');
+CREATE TYPE SCORE_TYPE AS ENUM ('A','B','C','D','E');
+
+CREATE TABLE IF NOT EXISTS department (
+    ID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	DEPARTMENT_NAME VARCHAR (200) NOT NULL,
+	FIO_HEAD VARCHAR (200) NOT NULL,
+	AMOUNT_PERSONAL SMALLINT
+);
+INSERT INTO department (
+	DEPARTMENT_NAME,
+	FIO_HEAD,
+	AMOUNT_PERSONAL) 
+VALUES (
+	'data_engineering','Сидоров Б.И.',25),
+	(
+	'data_analyst','Главный А.Б.',15);
+
+CREATE TABLE IF NOT EXISTS personal (
+    ID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	FIO VARCHAR (200) NOT NULL,
+	BIRTHDAY DATE NOT NULL,
+	DATE_OF_BEGIN DATE NOT NULL,
+	JOB_TITLE VARCHAR (200) NOT NULL,
+	EMPLOYEE_LEVEL GRADE_TYPE NOT NULL,
+	SALARY INT,
+	ID_DEPARTMENT INTEGER,
+	DRIVER_LICENCE BOOLEAN,
+	CONSTRAINT department_fk
+	    FOREIGN KEY (ID_DEPARTMENT)
+        REFERENCES department(ID)
+        ON DELETE CASCADE);
+
+INSERT INTO personal (
+	FIO,
+	BIRTHDAY,
+	DATE_OF_BEGIN,
+	JOB_TITLE,
+	EMPLOYEE_LEVEL,
+	SALARY,
+	ID_DEPARTMENT,
+	DRIVER_LICENCE) 
+VALUES (
+	'Иванов И.И.','1995-10-10','2020-01-09','ассистент',
+	'JUNIOR',50000,1,'true'),
+	(
+	'Петров В.А.','2000-10-10','2021-09-01','ассистент',
+	'JUNIOR',60000,1,'false'),
+	(
+	'Сидоров Б.И.','1990-10-10','2010-09-01','старший преподаватель',
+	'MIDDLE',100000,1,'true'),
+	(
+	'Сидоров А.А.','1970-10-10','2000-09-01','профессор',
+	'MIDDLE',150000,2,'true'),
+	(
+	'Главный А.Б.','1980-10-10','2015-09-01','доцент',
+	'SENIOR',200000,2,'true');
+
+CREATE TABLE IF NOT EXISTS csore (
+    SCORE_ID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	EMPLOYEE_ID INT,
+	Q1 SCORE_TYPE,
+	Q2 SCORE_TYPE,
+	Q3 SCORE_TYPE,
+	Q4 SCORE_TYPE,
+	CONSTRAINT EMPLOYEE_fk 
+	    FOREIGN KEY (EMPLOYEE_ID)
+	    REFERENCES personal(ID)
+	    ON DELETE CASCADE
+);
+
+INSERT INTO csore (EMPLOYEE_ID,	Q1,	Q2,	Q3,	Q4) 
+VALUES (1,'A','B','E','A'),
+	   (2,'E','E','E','B'),
+	   (3,'A','A','C','B'),
+	   (4,'B','C','C','C'),
+	   (5,'E','B','C','B');
+	   
+
+INSERT INTO department(
+	DEPARTMENT_NAME,
+	FIO_HEAD,
+	AMOUNT_PERSONAL) 
+VALUES (
+	'data mining','Антонов И.И.',3);
+	
+INSERT INTO personal (
+	FIO,
+	BIRTHDAY,
+	DATE_OF_BEGIN,
+	JOB_TITLE,
+	EMPLOYEE_LEVEL,
+	SALARY,
+	ID_DEPARTMENT,
+	DRIVER_LICENCE) 
+VALUES (
+	'Антонов И.И.','1995-10-10','2020-01-09','профессор',
+	'SENIOR',250000,3,'true'),
+	(
+	'Петрин В.А.','2000-10-10','2021-09-01','ассистент',
+	'JUNIOR',50000,3,'false'),
+	(
+	'Сидорин Б.И.','1990-10-10','2010-09-01','старший преподаватель',
+	'MIDDLE',90000,3,'true');
+
+SELECT ID,FIO,((Now()-DATE_OF_BEGIN)/365) AS experience FROM personal e;
+SELECT ID,FIO,((Now()-DATE_OF_BEGIN)/365) AS experience FROM personal e limit 3;
+
+SELECT ID,FIO FROM personal e WHERE DRIVER_LICENCE=True;
+SELECT EMPLOYEE_ID FROM csore e WHERE ((Q1='D' OR Q1='E') OR (Q2='D' OR Q2='E') OR (Q3='D' OR Q3='E') OR (Q4='D' OR Q4='E'));
+
+SELECT MAX(SALARY) FROM personal;
+
